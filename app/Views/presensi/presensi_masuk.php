@@ -25,6 +25,7 @@
                             <input type="hidden" name="tanggal_masuk" value="<?= $tanggal_masuk ?>">
                             <input type="hidden" name="jam_masuk" value="<?= $jam_masuk ?>">
                             <input type="hidden" name="image-cam" class="image-tag">
+                            <input type="hidden" name="shift_type" value="<?= $shift_type?>">
                             <button class="btn btn-primary mt-3" type="submit" id="ambil-foto">Ambil Gambar</button>
                         </form>
                     </div>

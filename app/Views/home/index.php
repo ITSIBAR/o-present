@@ -61,7 +61,7 @@ if ($user_lokasi_presensi->zona_waktu === 'WIB') {
                                 <div id="bulan_masuk"></div>
                                 <div class="ms-2"></div>
                                 <div id="tahun_masuk"></div>
-                            </div>
+                            </div>                                                                                                                                                      
                             <div class="parent_clock mt-3">
                                 <div id="jam_masuk"></div>
                                 <div> : </div>
@@ -70,7 +70,7 @@ if ($user_lokasi_presensi->zona_waktu === 'WIB') {
                                 <div id="detik_masuk"></div>
                             </div>
                             <form action="<?= base_url('/presensi-masuk') ?>" method="post">
-                                <?= csrf_field() ?>
+                            <?= csrf_field() ?>
                                 <input type="hidden" name="latitude_kantor" value="<?= $user_lokasi_presensi->latitude ?>">
                                 <input type="hidden" name="longitude_kantor" value="<?= $user_lokasi_presensi->longitude ?>">
                                 <input type="hidden" name="radius" value="<?= $user_lokasi_presensi->radius ?>">
@@ -79,8 +79,15 @@ if ($user_lokasi_presensi->zona_waktu === 'WIB') {
                                 <input type="hidden" name="longitude_pegawai" id="longitude_pegawai">
                                 <input type="hidden" name="tanggal_masuk" value="<?= date('Y-m-d') ?>">
                                 <input type="hidden" name="jam_masuk" value="<?= date('H:i:s') ?>">
+                                <select name="shift_type" id="shift_type" class="form-select mt-5 text-center" >
+                                    <option value="" disabled>Pilih Shift</option>
+                                    <option value="2">Non-Shift</option>
+                                    <option value="3">Shift Pagi</option>
+                                    <option value="4">Shift Sore</option>
+                                    <option value="5">Shift Malam</option>
+                                </select>
                                 <button type="submit" class="btn btn-primary mt-5">Masuk</button>
-                            </form>
+                        </form>
                         <?php else : ?>
                             <div class="text-success text-xxl-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circle-check" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="height: 96px; width: 96px;">

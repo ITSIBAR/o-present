@@ -37,6 +37,18 @@ class Presensi extends BaseController
         $zona_waktu = $this->request->getVar('zona_waktu');
         $tanggal_masuk = $this->request->getVar('tanggal_masuk');
         $jam_masuk = $this->request->getVar('jam_masuk');
+        $shift_type = $this->request->getVar('shift_type'); 
+        // dd($shift_type);
+
+        if ($shift_type == '0') {
+            #kirim data ke tabel pegawai
+        } elseif ($shift_type == '1') {
+            # code...
+        } elseif ($shift_type == '2') {
+            # code...
+        } else {
+            # code...
+        }
 
         // Jika user menonaktifkan lokasi, maka arahkan kembali ke halaman home
         if (empty($latitude_pegawai) || empty($longitude_pegawai)) {
@@ -80,6 +92,7 @@ class Presensi extends BaseController
             'radius' => $radius,
             'tanggal_masuk' => $tanggal_masuk,
             'jam_masuk' => $jam_masuk,
+            'shift_type' => $shift_type,
         ];
 
         return view('presensi/presensi_masuk', $data);
@@ -104,6 +117,11 @@ class Presensi extends BaseController
         $id_pegawai = $this->request->getPost('id_pegawai');
         $tanggal_masuk = $this->request->getPost('tanggal_masuk');
         $jam_masuk = $this->request->getPost('jam_masuk');
+        $shift_type = $this->request->getPost('shift_type');
+        // dd($shift_type);
+        $this->pegawaiModel->update($id_pegawai, [
+            'id_lokasi_presensi' => $shift_type,
+        ]);
 
         $this->presensiModel->save([
             'id_pegawai' => $id_pegawai,

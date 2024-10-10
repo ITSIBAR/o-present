@@ -19,6 +19,19 @@ class PegawaiModel extends Model
         $this->db = \Config\Database::connect();
         $this->builder = $this->db->table('pegawai');
     }
+    public function getPegawaiJadwal()
+    {
+        $pegawai = $this->db->table('pegawai')->get()->getResultArray();
+        return $pegawai;
+    }
+    public function getAllJadwal()
+    {
+        // Query to retrieve all data from the jadwal table
+        $query = $this->db->table('jadwal')->get();
+
+        // Return the result as an array
+        return $query->getResultArray();
+    }
 
     public function getPegawai($username = false, $filter = false, $print = false, $perPage = 10)
     {

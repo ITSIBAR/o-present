@@ -26,6 +26,8 @@ class Ketidakhadiran extends BaseController
 
         $user_profile = $this->usersModel->getUserInfo(user_id());
         $data_ketidakhadiran_pegawai = $this->ketidakhadiranModel->getDataKetidakhadiran($user_profile->id_pegawai);
+        // var_dump($data_ketidakhadiran_pegawai);
+        // die;
 
         $filter = [
             'keyword' => $this->request->getGet('keyword'),
