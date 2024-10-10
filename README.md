@@ -8,16 +8,17 @@ Presensi online tanpa ribet! Catat kehadiran dengan cepat menggunakan foto dan G
 
 ## Requirements
 
-- CodeIgniter 4.1+ or later
-- XAMPP 8.2.4 or later
-- Geolocation-enabled Browser
+- [CodeIgniter 4](https://codeigniter.com/user_guide/intro/index.html)
+- [Composer](https://getcomposer.org/)
+- [XAMPP 8.2.4 or later](https://www.apachefriends.org/download.html)
+- Geolocation-enabled Browser. Read the location access conditions [here](https://www.chromium.org/Home/chromium-security/prefer-secure-origins-for-powerful-new-features/).
 
 ## Features
 
 Temukan fitur-fitur lengkap pada aplikasi presensi O-Present:
 - Presensi Berdasarkan GPS Pegawai
 - Presensi Berdasarkan Foto Selfie
-- Import Laporan Presensi ke dalam Bentuk Microsoft Excel
+- Export Laporan Presensi ke dalam Bentuk Microsoft Excel
 - Temukan Data dengan Filter dan Live Search
 - Simpan Data Presensi, Lokasi Presensi, hingga Data Pegawai
 - Sistem Otentikasi (Auth) Multiuser untuk Pegawai, Admin, dan Head
@@ -62,7 +63,7 @@ Anda perlu melakukan sedikit konfigurasi di bawah ini sebelum mulai menjalankan 
       database.default.DBPrefix =
       database.default.port = 3306
       ```
-     
+
 7. Buka file `RoleFilter.php` dalam folder `vendor\myth\auth\src\Filters\RoleFilter.php`.
    
 8. Modifikasi function before menjadi seperti berikut ini.
@@ -132,7 +133,6 @@ Anda perlu melakukan sedikit konfigurasi di bawah ini sebelum mulai menjalankan 
             ];
 
             if (!$this->validate($rules)) {
-                dd($this->validator->getErrors());
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
         }
@@ -214,10 +214,10 @@ Anda perlu melakukan sedikit konfigurasi di bawah ini sebelum mulai menjalankan 
     - Konfigurasikan tampilan auth website.
       ```
       public $views = [
-        'login'           => 'Auth\login',
+        'login'           => 'app\Views\auth\login',
         'register'        => 'Myth\Auth\Views\register',
-        'forgot'          => 'Auth\forgot',
-        'reset'           => 'Auth\reset-password',
+        'forgot'          => 'app\Views\auth\forgot',
+        'reset'           => 'app\Views\auth\reset-password',
         'emailForgot'     => 'Myth\Auth\Views\emails\forgot',
         'emailActivation' => 'Myth\Auth\Views\emails\activation',
       ];
@@ -230,21 +230,25 @@ Anda perlu melakukan sedikit konfigurasi di bawah ini sebelum mulai menjalankan 
     public string $fromEmail  = 'your email here';
     public string $fromName   = 'O-Present';
     ```
+13. Isi nilai SMTPUser dengan email yang sama dengan yang Anda masukkan di $fromEmail.
+    ```
+    public string $SMTPUser = 'your email here';
+    ```
     
-13. Isi nilai SMTPPass dengan kode yang Anda dapatkan dari langkah 2 verifikasi dua langkah pada Akun Google Anda untuk Aplikasi XAMPP.
+14. Isi nilai SMTPPass dengan kode yang Anda dapatkan dari verifikasi dua langkah pada Akun Google Anda untuk Aplikasi XAMPP. Untuk cara lengkap memperoleh kode verifikasi 2 langkah Akun Google dapat dilihat pada link ini https://support.google.com/accounts/answer/185833?hl=en.
     ```
     public string $SMTPPass = 'your code here';
     ``` 
     
-14. Aktifkan server Apache dan MySQL di XAMPP Control Panel Anda untuk memulai server pengembangan lokal.
+15. Aktifkan server Apache dan MySQL di XAMPP Control Panel Anda untuk memulai server pengembangan lokal.
     
-15. Kunjungi `localhost/phpmyadmin` pada browser Anda, lalu buat database baru dengan nama o-present atau sesuaikan dengan nama database yang Anda inginkan
+16. Kunjungi `localhost/phpmyadmin` pada browser Anda, lalu buat database baru dengan nama o-present atau sesuaikan dengan nama database yang Anda inginkan
 
-16. Kembali ke terminal, jalankan perintah migrate dan seed
+17. Kembali ke terminal, jalankan perintah migrate dan seed
     - Migrate
       ```console
       php spark migrate -2024-02-02-091537_create_opresent_tables
-      php spark migrate -2024-02-02-142048_create_auth_tables.php
+      php spark migrate -2024-02-02-142048_create_auth_tables
       ```
 
     - Seed
@@ -259,12 +263,12 @@ Anda perlu melakukan sedikit konfigurasi di bawah ini sebelum mulai menjalankan 
       php spark db:seed AuthGroupsUsersSeeder
       ```
 
-16. Selanjutnya, start server dengan menjalankan perintah berikut ini di terminal.
+18. Selanjutnya, start server dengan menjalankan perintah berikut ini di terminal.
     ```console
     php spark serve
     ```
       
-17. Selesai! Anda dapat mengakses web melalui port 8080 `http://localhost:8080` di server lokal.
+19. Selesai! Anda dapat mengakses web melalui port 8080 `http://localhost:8080` di server lokal.
 
 ## First Usage
 
@@ -309,10 +313,23 @@ Pada role Admin dan Pegawai, pengguna dapat mengajukan ketidakhadiran dengan bat
 #### Kelola Ketidakhadiran
 Pada role Head, pengguna dapat mengelola ijin ketidakhadiran, yang meliputi PENDING, APPROVED, dan REJECTED. Pengguna dapat mengunduh daftar ketidakhadiran dari seluruh pegawai ke dalam bentuk Microsoft Excel.
 
+Pada website, batas pengajuan ketidakhadiran dapat dilakukan minimal 3 hari sebelum tanggal mulai cuti untuk pengguna dengan role Head menentukan status pengajuan kehadiran. Untuk memodifikasi batas pengajuan, dapat dilakukan pada file `app\Controllers\Ketidakhadiran.php` pada validasi tanggal mulai (baris ke 287 dan 385) menjadi seperti ini:
+
+```
+'tanggal_mulai' => [
+                'rules' => 'required|valid_date[Y-m-d]|daysAfter[3]',
+                'errors' => [
+                    'required' => 'Tanggal mulai ketidakhadiran wajib diisi.',
+                    'valid_date' => 'Tanggal harus dalam format YYYY-MM-DD.',
+                    'daysAfter' => 'Pengajuan cuti harus minimal 3 hari sebelum tanggal cuti yang diinginkan.'
+                ]
+            ],
+```
+
 #### Master Data
 Pada role Head dan Admin, pengguna dapat mengelola data jabatan, lokasi presensi, dan pegawai. Pengguna dapat menemukan data-data tersebut dengan memanfaatkan fitur filter data dan live search data sehingga data dapat ditemukan dengan cepat dan efisien. Pengguna juga dapat mengunduh data-data tersebut ke dalam bentuk Microsoft Excel.
 
-Untuk data pegawai yang baru ditambahkan, pegawai dapat mengakses aplikasi setelah melakukan aktivasi melalui email, dengan password '123456'.
+Untuk data beserta akun pegawai yang baru ditambahkan, pegawai dapat mengakses website setelah melewati proses aktivasi, dengan password default '123456'. Pengguna dengan role Head dan Admin dapat menambahkan akun baru untuk pegawai dan menentukan langsung status aktivasi nya (Aktivasi Instan, Aktivasi Melalui Email, atau Aktivasi Nanti).
 
 #### Kelola Profile
 Untuk semua role, pengguna dapat mengelola profile nya, yang meliputi ubah foto profile, ubah username, ubah nama dan info profile lainnya.
@@ -335,6 +352,7 @@ Teknologi dalam aplikasi ini:
 - [Tabler.io](https://tabler.io/) - a free and open source web application UI kit based on Bootstrap 5.
 - [jQuery](https://jquery.com/) - a fast, small, and feature-rich JavaScript library.
 - [WebcamJS](https://pixlcore.com/read/WebcamJS) - a small standalone JavaScript library for capturing still images
+- [Leaflet](https://leafletjs.com/) - a JavaScript library used to build web mapping applications.
 
 ## Contribution
 
@@ -347,26 +365,5 @@ Kontribusi untuk penyempurnaan aplikasi ini sangat dihargai. Jika Anda menemukan
 
 ## Credits
 
-> Made by [Josephine. ](https://josephines1.github.io/)
+> Made by [Josephine](https://josephines1.github.io/).
 > Template by [tabler.io](tabler.io)
-
-[//]: # "These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax"
-[dill]: https://github.com/joemccann/dillinger
-[git-repo-url]: https://github.com/joemccann/dillinger.git
-[john gruber]: http://daringfireball.net
-[df1]: http://daringfireball.net/projects/markdown/
-[markdown-it]: https://github.com/markdown-it/markdown-it
-[Ace Editor]: http://ace.ajax.org
-[node.js]: http://nodejs.org
-[Twitter Bootstrap]: http://twitter.github.com/bootstrap/
-[jQuery]: http://jquery.com
-[@tjholowaychuk]: http://twitter.com/tjholowaychuk
-[express]: http://expressjs.com
-[AngularJS]: http://angularjs.org
-[Gulp]: http://gulpjs.com
-[PlDb]: https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md
-[PlGh]: https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md
-[PlGd]: https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md
-[PlOd]: https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md
-[PlMe]: https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md
-[PlGa]: https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md

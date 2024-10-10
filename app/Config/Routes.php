@@ -7,6 +7,7 @@ use CodeIgniter\Router\RouteCollection;
  */
 //admin
 $routes->get('/', 'Home::index', ['filter' => 'role:admin,pegawai']);
+$routes->get('/waktu', 'Home::getWaktu');
 $routes->get('/admin', 'Admin::index', ['filter' => 'role:admin,head']);
 //jabatan
 $routes->get('/jabatan', 'Jabatan::index', ['filter' => 'role:admin,head']);
